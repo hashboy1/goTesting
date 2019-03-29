@@ -5,8 +5,9 @@ import (
     //"encoding/hex"
     "fmt"
     _ "github.com/go-sql-driver/mysql"
+    "gopkg.in/gcfg.v1"
     //"strconv"
-    //"time"
+    "time"
  )
 //CheckErr Function
  func CheckErr(err error) {
@@ -20,8 +21,33 @@ func TextPrint(content string){
 	fmt.Println(content)
 }
 
+//LoadConfig Function
+func LoadConfig(){
+
+    config := struct {
+        Mysql struct {
+            Username    string
+            Password    string
+            Url         string
+        }
+        Redis struct {
+            Address    string
+        }
+    }{}
+ 
+    err := gcfg.ReadFileInto(&config, "E:\\workspace\\go\\src\\mysql\\config.ini")
+    if err != nil {
+        fmt.Println("Failed to parse config file: %s", err)
+    }
+    fmt.Println(config.Mysql.Username)
+    fmt.Println(config.Mysql.Password)
+    fmt.Println(config.Mysql.Url)
+
+}
+
 func main() {
-	var DBDriver string
+    var DBDriver string
+    LoadConfig()
 	DBDriver = "vrkb:3dms@tcp(192.168.0.249:3306)/testdb?charset=utf8"
 	var isOpen bool
 	db, err := sql.Open("mysql", DBDriver)
@@ -57,8 +83,10 @@ func main() {
         //fmt.Println(Role)
 		//fmt.Println(Department)
 		//fmt.Println(ID+EmployeeNO+RealName+Password+Role+Department)
-		go TextPrint(ID+EmployeeNO+RealName+Password+Role+Department)
+        go TextPrint(ID+EmployeeNO+RealName+Password+Role+Department)
+        
     }
+    time.Sleep(5 * time.Second)
 
 }
   
